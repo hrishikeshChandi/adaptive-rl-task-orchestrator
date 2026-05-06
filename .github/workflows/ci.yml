@@ -1,3 +1,201 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  security-events: write
+  contents: read
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME_API: hrishikeshchandi/devops-project-api
+  IMAGE_NAME_WORKER: hrishikeshchandi/devops-project-worker
+  IMAGE_NAME_RECOVERY: hrishikeshchandi/devops-project-recovery
+  IMAGE_NAME_HEARTBEAT: hrishikeshchandi/devops-project-heartbeat
+  IMAGE_NAME_FRONTEND: hrishikeshchandi/devops-project-frontend
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install linting tools
+        run: pip install flake8 black
+      - name: Run flake8
+        run: flake8 . --max-line-length=127 --statistics
+      - name: Check black formatting
+        run: black --check --diff .
+
+  test:
+    runs-on: ubuntu-latest
+    needs: lint
+    services:
+      mongodb:
+        image: mongo:7
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --eval 'db.runCommand({ping:1})'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+      - name: Wait for MongoDB
+        run: sleep 10
+      - name: Run pytest with coverage
+        env:
+          MONGO_URI: mongodb://localhost:27017/
+        run: |
+          pytest tests/ -v --cov=. --cov-report=term --cov-report=html --cov-fail-under=35
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: htmlcov/
+          retention-days: 7
+
+  postman:
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+      - name: Start Docker Compose
+        run: |
+          docker compose up -d
+          sleep 10
+      - name: Install Newman
+        run: npm install -g newman
+      - name: Run Postman collection
+        run: newman run tests/postman-collection.json
+      - name: Stop Docker Compose
+        run: docker compose down
+
+  security-scan:
+    runs-on: ubuntu-latest
+    needs: test
+    permissions:
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Trivy vulnerability scan
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+      - name: Upload Trivy results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-results.sarif'
+      - name: Check for critical vulnerabilities
+        run: |
+          if grep -q '"SEVERITY":"CRITICAL"' trivy-results.sarif; then
+            echo "❌ CRITICAL vulnerabilities found! Pipeline failed."
+            exit 1
+          else
+            echo "✅ No critical vulnerabilities found"
+          fi
+
+  build-and-push:
+    runs-on: ubuntu-latest
+    needs: [test, postman, security-scan]
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build API image
+        run: docker build -t ${{ env.IMAGE_NAME_API }}:${{ github.sha }} -f Dockerfile.api .
+      - name: Build Worker image
+        run: docker build -t ${{ env.IMAGE_NAME_WORKER }}:${{ github.sha }} -f Dockerfile.worker .
+      - name: Build Recovery image
+        run: docker build -t ${{ env.IMAGE_NAME_RECOVERY }}:${{ github.sha }} -f Dockerfile.recovery .
+      - name: Build Heartbeat image
+        run: docker build -t ${{ env.IMAGE_NAME_HEARTBEAT }}:${{ github.sha }} -f Dockerfile.heartbeat .
+      - name: Build Frontend image
+        run: docker build -t ${{ env.IMAGE_NAME_FRONTEND }}:${{ github.sha }} -f Dockerfile.frontend .
+      
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GHCR_TOKEN }}
+      
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      
+      - name: Push to ghcr.io
+        run: |
+          docker tag ${{ env.IMAGE_NAME_API }}:${{ github.sha }} ghcr.io/${{ env.IMAGE_NAME_API }}:${{ github.sha }}
+          docker tag ${{ env.IMAGE_NAME_API }}:${{ github.sha }} ghcr.io/${{ env.IMAGE_NAME_API }}:latest
+          docker push ghcr.io/${{ env.IMAGE_NAME_API }}:${{ github.sha }}
+          docker push ghcr.io/${{ env.IMAGE_NAME_API }}:latest
+          
+          docker tag ${{ env.IMAGE_NAME_WORKER }}:${{ github.sha }} ghcr.io/${{ env.IMAGE_NAME_WORKER }}:${{ github.sha }}
+          docker tag ${{ env.IMAGE_NAME_WORKER }}:${{ github.sha }} ghcr.io/${{ env.IMAGE_NAME_WORKER }}:latest
+          docker push ghcr.io/${{ env.IMAGE_NAME_WORKER }}:${{ github.sha }}
+          docker push ghcr.io/${{ env.IMAGE_NAME_WORKER }}:latest
+          
+          docker tag ${{ env.IMAGE_NAME_RECOVERY }}:${{ github.sha }} ghcr.io/${{ env.IMAGE_NAME_RECOVERY }}:${{ github.sha }}
+          docker tag ${{ env.IMAGE_NAME_RECOVERY }}:${{ github.sha }} ghcr.io/${{ env.IMAGE_NAME_RECOVERY }}:latest
+          docker push ghcr.io/${{ env.IMAGE_NAME_RECOVERY }}:${{ github.sha }}
+          docker push ghcr.io/${{ env.IMAGE_NAME_RECOVERY }}:latest
+          
+          docker tag ${{ env.IMAGE_NAME_HEARTBEAT }}:${{ github.sha }} ghcr.io/${{ env.IMAGE_NAME_HEARTBEAT }}:${{ github.sha }}
+          docker tag ${{ env.IMAGE_NAME_HEARTBEAT }}:${{ github.sha }} ghcr.io/${{ env.IMAGE_NAME_HEARTBEAT }}:latest
+          docker push ghcr.io/${{ env.IMAGE_NAME_HEARTBEAT }}:${{ github.sha }}
+          docker push ghcr.io/${{ env.IMAGE_NAME_HEARTBEAT }}:latest
+          
+          docker tag ${{ env.IMAGE_NAME_FRONTEND }}:${{ github.sha }} ghcr.io/${{ env.IMAGE_NAME_FRONTEND }}:${{ github.sha }}
+          docker tag ${{ env.IMAGE_NAME_FRONTEND }}:${{ github.sha }} ghcr.io/${{ env.IMAGE_NAME_FRONTEND }}:latest
+          docker push ghcr.io/${{ env.IMAGE_NAME_FRONTEND }}:${{ github.sha }}
+          docker push ghcr.io/${{ env.IMAGE_NAME_FRONTEND }}:latest
+      
+      - name: Push to Docker Hub
+        run: |
+          docker tag ${{ env.IMAGE_NAME_API }}:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/devops-project-api:${{ github.sha }}
+          docker tag ${{ env.IMAGE_NAME_API }}:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/devops-project-api:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/devops-project-api:${{ github.sha }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/devops-project-api:latest
+          
+          docker tag ${{ env.IMAGE_NAME_WORKER }}:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/devops-project-worker:${{ github.sha }}
+          docker tag ${{ env.IMAGE_NAME_WORKER }}:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/devops-project-worker:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/devops-project-worker:${{ github.sha }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/devops-project-worker:latest
+          
+          docker tag ${{ env.IMAGE_NAME_RECOVERY }}:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/devops-project-recovery:${{ github.sha }}
+          docker tag ${{ env.IMAGE_NAME_RECOVERY }}:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/devops-project-recovery:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/devops-project-recovery:${{ github.sha }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/devops-project-recovery:latest
+          
+          docker tag ${{ env.IMAGE_NAME_HEARTBEAT }}:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/devops-project-heartbeat:${{ github.sha }}
+          docker tag ${{ env.IMAGE_NAME_HEARTBEAT }}:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/devops-project-heartbeat:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/devops-project-heartbeat:${{ github.sha }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/devops-project-heartbeat:latest
+          
+          docker tag ${{ env.IMAGE_NAME_FRONTEND }}:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/devops-project-frontend:${{ github.sha }}
+          docker tag ${{ env.IMAGE_NAME_FRONTEND }}:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/devops-project-frontend:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/devops-project-frontend:${{ github.sha }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/devops-project-frontend:latest
+
 # name: CI/CD Pipeline
 
 # on:
@@ -147,208 +345,3 @@
 #   #           cd /opt/task-orchestrator
 #   #           docker compose pull
 #   #           docker compose up -d
-
-name: CI/CD Pipeline
-
-on:
-  push:
-    branches: [ main, develop ]
-  pull_request:
-    branches: [ main ]
-
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME_API: hrishikeshchandi/devops-project-api
-  IMAGE_NAME_WORKER: hrishikeshchandi/devops-project-worker
-  IMAGE_NAME_RECOVERY: hrishikeshchandi/devops-project-recovery
-  IMAGE_NAME_HEARTBEAT: hrishikeshchandi/devops-project-heartbeat
-  IMAGE_NAME_FRONTEND: hrishikeshchandi/devops-project-frontend
-
-jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Install linting tools
-        run: pip install flake8 black
-      - name: Run flake8
-        run: flake8 . --max-line-length=127 --statistics
-      - name: Check black formatting
-        run: black --check --diff .
-
-  test:
-    runs-on: ubuntu-latest
-    needs: lint
-    services:
-      mongodb:
-        image: mongo:7
-        ports:
-          - 27017:27017
-        options: >-
-          --health-cmd "mongosh --eval 'db.runCommand({ping:1})'"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Install dependencies
-        run: pip install -r requirements-dev.txt
-      - name: Wait for MongoDB
-        run: sleep 10
-      - name: Run pytest with coverage
-        env:
-          MONGO_URI: mongodb://localhost:27017/
-        run: |
-          pytest tests/ -v --cov=. --cov-report=term --cov-report=html --cov-fail-under=35
-      - name: Upload coverage report
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-report
-          path: htmlcov/
-          retention-days: 7
-
-  postman:
-    runs-on: ubuntu-latest
-    needs: lint
-    steps:
-      - uses: actions/checkout@v4
-      - name: Start Docker Compose
-        run: |
-          docker compose up -d
-          sleep 10
-      - name: Install Newman
-        run: npm install -g newman
-      - name: Run Postman collection
-        run: newman run tests/postman-collection.json
-      - name: Stop Docker Compose
-        run: docker compose down
-  
-  security-scan:
-    runs-on: ubuntu-latest
-    needs: test
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Run Trivy vulnerability scan (Code)
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: 'fs'
-          scan-ref: '.'
-          format: 'sarif'
-          output: 'trivy-results.sarif'
-      
-      - name: Upload security report to GitHub
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: 'trivy-results.sarif'
-      
-      - name: Check for critical vulnerabilities
-        run: |
-          if grep -q '"SEVERITY":"CRITICAL"' trivy-results.sarif; then
-            echo "Critical vulnerabilities found!"
-            exit 1
-          else
-            echo "No critical vulnerabilities"
-          fi
-
-  build-and-push:
-    runs-on: ubuntu-latest
-    needs: [test, postman, security-scan]
-    if: github.ref == 'refs/heads/main'
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      - name: Build API image
-        run: docker build -t ${{ env.IMAGE_NAME_API }}:${{ github.sha }} -f Dockerfile.api .
-      - name: Build Worker image
-        run: docker build -t ${{ env.IMAGE_NAME_WORKER }}:${{ github.sha }} -f Dockerfile.worker .
-      - name: Build Recovery image
-        run: docker build -t ${{ env.IMAGE_NAME_RECOVERY }}:${{ github.sha }} -f Dockerfile.recovery .
-      - name: Build Heartbeat image
-        run: docker build -t ${{ env.IMAGE_NAME_HEARTBEAT }}:${{ github.sha }} -f Dockerfile.heartbeat .
-      - name: Build Frontend image
-        run: docker build -t ${{ env.IMAGE_NAME_FRONTEND }}:${{ github.sha }} -f Dockerfile.frontend .
-      
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GHCR_TOKEN }}
-      
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-      
-      - name: Push to ghcr.io
-        run: |
-          # API
-          docker tag ${{ env.IMAGE_NAME_API }}:${{ github.sha }} ghcr.io/${{ env.IMAGE_NAME_API }}:${{ github.sha }}
-          docker tag ${{ env.IMAGE_NAME_API }}:${{ github.sha }} ghcr.io/${{ env.IMAGE_NAME_API }}:latest
-          docker push ghcr.io/${{ env.IMAGE_NAME_API }}:${{ github.sha }}
-          docker push ghcr.io/${{ env.IMAGE_NAME_API }}:latest
-          
-          # WORKER
-          docker tag ${{ env.IMAGE_NAME_WORKER }}:${{ github.sha }} ghcr.io/${{ env.IMAGE_NAME_WORKER }}:${{ github.sha }}
-          docker tag ${{ env.IMAGE_NAME_WORKER }}:${{ github.sha }} ghcr.io/${{ env.IMAGE_NAME_WORKER }}:latest
-          docker push ghcr.io/${{ env.IMAGE_NAME_WORKER }}:${{ github.sha }}
-          docker push ghcr.io/${{ env.IMAGE_NAME_WORKER }}:latest
-          
-          # RECOVERY
-          docker tag ${{ env.IMAGE_NAME_RECOVERY }}:${{ github.sha }} ghcr.io/${{ env.IMAGE_NAME_RECOVERY }}:${{ github.sha }}
-          docker tag ${{ env.IMAGE_NAME_RECOVERY }}:${{ github.sha }} ghcr.io/${{ env.IMAGE_NAME_RECOVERY }}:latest
-          docker push ghcr.io/${{ env.IMAGE_NAME_RECOVERY }}:${{ github.sha }}
-          docker push ghcr.io/${{ env.IMAGE_NAME_RECOVERY }}:latest
-          
-          # HEARTBEAT
-          docker tag ${{ env.IMAGE_NAME_HEARTBEAT }}:${{ github.sha }} ghcr.io/${{ env.IMAGE_NAME_HEARTBEAT }}:${{ github.sha }}
-          docker tag ${{ env.IMAGE_NAME_HEARTBEAT }}:${{ github.sha }} ghcr.io/${{ env.IMAGE_NAME_HEARTBEAT }}:latest
-          docker push ghcr.io/${{ env.IMAGE_NAME_HEARTBEAT }}:${{ github.sha }}
-          docker push ghcr.io/${{ env.IMAGE_NAME_HEARTBEAT }}:latest
-          
-          # FRONTEND
-          docker tag ${{ env.IMAGE_NAME_FRONTEND }}:${{ github.sha }} ghcr.io/${{ env.IMAGE_NAME_FRONTEND }}:${{ github.sha }}
-          docker tag ${{ env.IMAGE_NAME_FRONTEND }}:${{ github.sha }} ghcr.io/${{ env.IMAGE_NAME_FRONTEND }}:latest
-          docker push ghcr.io/${{ env.IMAGE_NAME_FRONTEND }}:${{ github.sha }}
-          docker push ghcr.io/${{ env.IMAGE_NAME_FRONTEND }}:latest
-      
-      - name: Push to Docker Hub
-        run: |
-          # API
-          docker tag ${{ env.IMAGE_NAME_API }}:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/devops-project-api:${{ github.sha }}
-          docker tag ${{ env.IMAGE_NAME_API }}:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/devops-project-api:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/devops-project-api:${{ github.sha }}
-          docker push ${{ secrets.DOCKER_USERNAME }}/devops-project-api:latest
-          
-          # WORKER
-          docker tag ${{ env.IMAGE_NAME_WORKER }}:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/devops-project-worker:${{ github.sha }}
-          docker tag ${{ env.IMAGE_NAME_WORKER }}:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/devops-project-worker:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/devops-project-worker:${{ github.sha }}
-          docker push ${{ secrets.DOCKER_USERNAME }}/devops-project-worker:latest
-          
-          # RECOVERY
-          docker tag ${{ env.IMAGE_NAME_RECOVERY }}:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/devops-project-recovery:${{ github.sha }}
-          docker tag ${{ env.IMAGE_NAME_RECOVERY }}:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/devops-project-recovery:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/devops-project-recovery:${{ github.sha }}
-          docker push ${{ secrets.DOCKER_USERNAME }}/devops-project-recovery:latest
-          
-          # HEARTBEAT
-          docker tag ${{ env.IMAGE_NAME_HEARTBEAT }}:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/devops-project-heartbeat:${{ github.sha }}
-          docker tag ${{ env.IMAGE_NAME_HEARTBEAT }}:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/devops-project-heartbeat:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/devops-project-heartbeat:${{ github.sha }}
-          docker push ${{ secrets.DOCKER_USERNAME }}/devops-project-heartbeat:latest
-          
-          # FRONTEND
-          docker tag ${{ env.IMAGE_NAME_FRONTEND }}:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/devops-project-frontend:${{ github.sha }}
-          docker tag ${{ env.IMAGE_NAME_FRONTEND }}:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/devops-project-frontend:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/devops-project-frontend:${{ github.sha }}
-          docker push ${{ secrets.DOCKER_USERNAME }}/devops-project-frontend:latest
