@@ -38,14 +38,46 @@ def _backoff_delay(attempt: int, base: float = 0.5, cap: float = 8.0) -> float:
     return delay + random.uniform(0.0, 0.15)
 
 
-def execute_task(task: dict) -> bool:
-    cpu = max(1, int(task.get("required_cpu", 1)))
-    ram = max(1, int(task.get("required_ram", 1)))
+# def execute_task(task: dict) -> bool:
+#     cpu = max(1, int(task.get("required_cpu", 1)))
+#     ram = max(1, int(task.get("required_ram", 1)))
 
-    duration = min(3.0, 0.05 * cpu + 0.03 * ram)
+#     duration = min(3.0, 0.05 * cpu + 0.03 * ram)
+#     time.sleep(duration)
+
+#     # Controlled failure rate for realistic instability without random runtime bugs.
+#     if random.random() < 0.3:
+#         raise Exception("Simulated execution failure")
+
+#     return True
+
+
+def execute_task(task: dict) -> bool:
+    cpu = task.get("required_cpu", 1)
+    ram = task.get("required_ram", 1)
+
+    # Get task type from the data field
+    task_type = task.get("data", {}).get("type", "unknown")
+
+    # Duration based on task TYPE, not CPU/RAM
+    duration_map = {
+        "cpu_heavy": 10,  # Fast even with high CPU/RAM
+        "io_heavy": 60,  # Slow even with low CPU/RAM
+        "memory_heavy": 120,  # Very slow
+        "network_heavy": 30,  # Medium
+        "mixed": 25,
+        "unknown": 15,
+    }
+
+    duration = duration_map.get(task_type, 15)
+    # Add small noise for realism (±3 seconds)
+    duration += random.uniform(-3, 3)
+    duration = max(1, duration)
+
+    print(f"Task: type={task_type}, CPU={cpu}, RAM={ram}, Duration={duration:.1f}s")
     time.sleep(duration)
 
-    # Controlled failure rate for realistic instability without random runtime bugs.
+    # Controlled failure rate
     if random.random() < 0.3:
         raise Exception("Simulated execution failure")
 
