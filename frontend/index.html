@@ -24,10 +24,10 @@
       }
 
       body {
-        background: linear-gradient(145deg, #f0f4fe 0%, #e9eef9 100%);
+        background: linear-gradient(145deg, #0a0f1a 0%, #0f172a 100%);
         font-family: "Inter", sans-serif;
         padding: 2rem 1.5rem;
-        color: #1a2634;
+        color: #e2e8f0;
       }
 
       .dashboard-container {
@@ -41,20 +41,20 @@
         align-items: center;
         flex-wrap: wrap;
         margin-bottom: 2rem;
-        background: rgba(255, 255, 255, 0.65);
+        background: rgba(15, 23, 42, 0.75);
         backdrop-filter: blur(8px);
         padding: 1rem 2rem;
         border-radius: 2rem;
         box-shadow:
-          0 8px 20px rgba(0, 0, 0, 0.02),
-          0 2px 6px rgba(0, 0, 0, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.6);
+          0 8px 20px rgba(0, 0, 0, 0.3),
+          0 2px 6px rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(71, 85, 105, 0.6);
       }
 
       .title-section h1 {
         font-size: 1.8rem;
         font-weight: 700;
-        background: linear-gradient(135deg, #1f2b3d, #2c3e66);
+        background: linear-gradient(135deg, #94a3b8, #38bdf8);
         -webkit-background-clip: text;
         background-clip: text;
         color: transparent;
@@ -63,7 +63,7 @@
 
       .title-section p {
         font-size: 0.85rem;
-        color: #4a5b6e;
+        color: #94a3b8;
         margin-top: 4px;
         display: flex;
         align-items: center;
@@ -71,8 +71,8 @@
       }
 
       .badge-rl {
-        background: #2c3e66;
-        color: white;
+        background: #1e293b;
+        color: #94a3b8;
         border-radius: 40px;
         padding: 4px 12px;
         font-size: 0.7rem;
@@ -80,8 +80,8 @@
       }
 
       .refresh-btn {
-        background: white;
-        border: none;
+        background: #1e293b;
+        border: 1px solid #334155;
         padding: 10px 20px;
         border-radius: 40px;
         font-weight: 500;
@@ -89,14 +89,16 @@
         align-items: center;
         gap: 8px;
         cursor: pointer;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
         transition: 0.2s;
         font-family: "Inter";
+        color: #e2e8f0;
       }
 
       .refresh-btn:hover {
-        background: #f0f3fc;
+        background: #2d3a5e;
         transform: translateY(-1px);
+        border-color: #475569;
       }
 
       .stats-grid {
@@ -107,13 +109,13 @@
       }
 
       .stat-card {
-        background: white;
+        background: #111827;
         border-radius: 1.5rem;
         padding: 1.2rem 1rem;
         box-shadow:
-          0 4px 12px rgba(0, 0, 0, 0.02),
-          0 1px 2px rgba(0, 0, 0, 0.03);
-        border: 1px solid rgba(0, 0, 0, 0.05);
+          0 4px 12px rgba(0, 0, 0, 0.3),
+          0 1px 2px rgba(0, 0, 0, 0.2);
+        border: 1px solid #1f2a3e;
         transition: all 0.2s;
       }
 
@@ -122,20 +124,20 @@
         text-transform: uppercase;
         letter-spacing: 0.5px;
         font-weight: 600;
-        color: #5c6f87;
+        color: #9ca3af;
       }
 
       .stat-number {
         font-size: 2.2rem;
         font-weight: 800;
-        color: #1e2a3e;
+        color: #f1f5f9;
         line-height: 1.2;
         margin-top: 8px;
       }
 
       .stat-sub {
         font-size: 0.7rem;
-        color: #6c7f9b;
+        color: #6b7280;
       }
 
       .action-row {
@@ -146,13 +148,13 @@
       }
 
       .card-panel {
-        background: white;
+        background: #111827;
         border-radius: 1.5rem;
         padding: 1.4rem 1.6rem;
         flex: 1;
         min-width: 260px;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.03);
-        border: 1px solid #eef2f9;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        border: 1px solid #1f2a3e;
       }
 
       .card-panel h3 {
@@ -162,6 +164,7 @@
         display: flex;
         align-items: center;
         gap: 8px;
+        color: #e2e8f0;
       }
 
       .form-group {
@@ -172,7 +175,7 @@
         font-size: 0.75rem;
         font-weight: 600;
         text-transform: uppercase;
-        color: #4a627a;
+        color: #9ca3af;
         display: block;
         margin-bottom: 4px;
       }
@@ -183,25 +186,26 @@
         width: 100%;
         padding: 10px 12px;
         border-radius: 14px;
-        border: 1px solid #cfddee;
-        background: #fefefe;
+        border: 1px solid #2d3a5e;
+        background: #0f172a;
         font-family: "Inter";
         font-size: 0.85rem;
         transition: 0.2s;
+        color: #f1f5f9;
       }
 
       input:focus,
       textarea:focus,
       select:focus {
         outline: none;
-        border-color: #3b6ea0;
-        box-shadow: 0 0 0 2px rgba(59, 110, 160, 0.2);
+        border-color: #38bdf8;
+        box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.3);
       }
 
       button.primary {
-        background: #1f2f44;
-        color: white;
-        border: none;
+        background: #1e293b;
+        color: #e2e8f0;
+        border: 1px solid #334155;
         padding: 10px 16px;
         border-radius: 40px;
         font-weight: 500;
@@ -212,8 +216,9 @@
       }
 
       button.primary:hover {
-        background: #2c405b;
+        background: #2d3a5e;
         transform: translateY(-1px);
+        border-color: #475569;
       }
 
       .filter-bar {
@@ -222,9 +227,10 @@
         gap: 1rem;
         align-items: flex-end;
         margin-bottom: 1.2rem;
-        background: #f8fafd;
+        background: #0f172a;
         padding: 1rem;
         border-radius: 1.2rem;
+        border: 1px solid #1f2a3e;
       }
 
       .filter-group {
@@ -238,22 +244,23 @@
       }
 
       .reset-filter {
-        background: #eef2ff;
-        border: none;
+        background: #1e293b;
+        border: 1px solid #334155;
         padding: 8px 16px;
         border-radius: 30px;
         cursor: pointer;
         font-weight: 500;
         font-size: 0.75rem;
+        color: #e2e8f0;
       }
 
       .section-card {
-        background: white;
+        background: #111827;
         border-radius: 1.5rem;
         padding: 1.2rem 1.4rem;
         margin-bottom: 2rem;
-        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.02);
-        border: 1px solid #eef2f9;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+        border: 1px solid #1f2a3e;
       }
 
       .section-header {
@@ -267,6 +274,7 @@
       .section-header h2 {
         font-size: 1.3rem;
         font-weight: 600;
+        color: #e2e8f0;
       }
 
       .table-wrapper {
@@ -283,15 +291,16 @@
       th {
         text-align: left;
         padding: 12px 8px;
-        background: #f8fafd;
+        background: #0f172a;
         font-weight: 600;
-        color: #2c3e50;
+        color: #94a3b8;
       }
 
       td {
         padding: 10px 8px;
-        border-bottom: 1px solid #edf2f7;
+        border-bottom: 1px solid #1f2a3e;
         vertical-align: middle;
+        color: #cbd5e1;
       }
 
       .status-badge {
@@ -309,43 +318,46 @@
       }
 
       .status-running {
-        background: #e0f2fe;
-        color: #0369a1;
+        background: #1e3a8a;
+        color: #93c5fd;
       }
 
       .status-completed {
-        background: #dff9e6;
-        color: #2b6e3c;
+        background: #064e3b;
+        color: #6ee7b7;
       }
 
       .status-failed {
-        background: #ffe4e2;
-        color: #b91c1c;
+        background: #7f1a1a;
+        color: #fca5a5;
       }
 
       .status-active {
-        background: #dff9e6;
-        color: #15803d;
+        background: #064e3b;
+        color: #6ee7b7;
       }
 
       .status-dead {
-        background: #f1f3f4;
-        color: #5c5f66;
+        background: #374151;
+        color: #d1d5db;
       }
 
       .badge-sm {
-        background: #eef2ff;
+        background: #1e293b;
         border-radius: 30px;
         padding: 2px 8px;
         font-size: 0.7rem;
+        color: #94a3b8;
       }
 
       .q-table-preview {
-        background: #f9fbfe;
+        background: #0f172a;
         border-radius: 1rem;
         padding: 0.8rem;
         font-family: monospace;
         font-size: 0.7rem;
+        color: #e2e8f0;
+        border: 1px solid #1f2a3e;
       }
 
       .flex-between {
@@ -355,7 +367,7 @@
       }
 
       .resource-bar {
-        background: #e2e8f0;
+        background: #1f2a3e;
         border-radius: 20px;
         height: 6px;
         width: 80px;
@@ -363,7 +375,7 @@
       }
 
       .resource-fill {
-        background: #2c6e9e;
+        background: #38bdf8;
         height: 100%;
         border-radius: 20px;
       }
@@ -373,13 +385,14 @@
         bottom: 20px;
         right: 20px;
         background: #1e293b;
-        color: white;
+        color: #e2e8f0;
         padding: 12px 20px;
         border-radius: 40px;
         font-size: 0.8rem;
         z-index: 1000;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
         transition: 0.2s;
+        border: 1px solid #334155;
       }
 
       @media (max-width: 680px) {
@@ -509,16 +522,7 @@
       <div class="section-card">
         <div class="section-header">
           <h2><i class="fas fa-network-wired"></i> Worker fleet</h2>
-          <span
-            style="
-              font-size: 0.7rem;
-              background: #eef2ff;
-              padding: 4px 12px;
-              border-radius: 30px;
-            "
-          >
-            heartbeat & resource aware
-          </span>
+          <span class="badge-sm"> heartbeat & resource aware </span>
         </div>
         <div class="table-wrapper">
           <table id="workersTable">
