@@ -35,7 +35,6 @@
         margin: 0 auto;
       }
 
-      /* header */
       .header {
         display: flex;
         justify-content: space-between;
@@ -51,6 +50,7 @@
           0 2px 6px rgba(0, 0, 0, 0.05);
         border: 1px solid rgba(255, 255, 255, 0.6);
       }
+
       .title-section h1 {
         font-size: 1.8rem;
         font-weight: 700;
@@ -60,6 +60,7 @@
         color: transparent;
         letter-spacing: -0.3px;
       }
+
       .title-section p {
         font-size: 0.85rem;
         color: #4a5b6e;
@@ -68,6 +69,7 @@
         align-items: center;
         gap: 6px;
       }
+
       .badge-rl {
         background: #2c3e66;
         color: white;
@@ -76,6 +78,7 @@
         font-size: 0.7rem;
         font-weight: 600;
       }
+
       .refresh-btn {
         background: white;
         border: none;
@@ -90,18 +93,19 @@
         transition: 0.2s;
         font-family: "Inter";
       }
+
       .refresh-btn:hover {
         background: #f0f3fc;
         transform: translateY(-1px);
       }
 
-      /* stats grid */
       .stats-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
         gap: 1.2rem;
         margin-bottom: 2rem;
       }
+
       .stat-card {
         background: white;
         border-radius: 1.5rem;
@@ -112,6 +116,7 @@
         border: 1px solid rgba(0, 0, 0, 0.05);
         transition: all 0.2s;
       }
+
       .stat-title {
         font-size: 0.8rem;
         text-transform: uppercase;
@@ -119,6 +124,7 @@
         font-weight: 600;
         color: #5c6f87;
       }
+
       .stat-number {
         font-size: 2.2rem;
         font-weight: 800;
@@ -126,18 +132,19 @@
         line-height: 1.2;
         margin-top: 8px;
       }
+
       .stat-sub {
         font-size: 0.7rem;
         color: #6c7f9b;
       }
 
-      /* action cards row */
       .action-row {
         display: flex;
         flex-wrap: wrap;
         gap: 1.5rem;
         margin-bottom: 2rem;
       }
+
       .card-panel {
         background: white;
         border-radius: 1.5rem;
@@ -147,6 +154,7 @@
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.03);
         border: 1px solid #eef2f9;
       }
+
       .card-panel h3 {
         font-size: 1.2rem;
         font-weight: 600;
@@ -155,9 +163,11 @@
         align-items: center;
         gap: 8px;
       }
+
       .form-group {
         margin-bottom: 0.9rem;
       }
+
       label {
         font-size: 0.75rem;
         font-weight: 600;
@@ -166,6 +176,7 @@
         display: block;
         margin-bottom: 4px;
       }
+
       input,
       textarea,
       select {
@@ -178,6 +189,7 @@
         font-size: 0.85rem;
         transition: 0.2s;
       }
+
       input:focus,
       textarea:focus,
       select:focus {
@@ -185,6 +197,7 @@
         border-color: #3b6ea0;
         box-shadow: 0 0 0 2px rgba(59, 110, 160, 0.2);
       }
+
       button.primary {
         background: #1f2f44;
         color: white;
@@ -197,10 +210,12 @@
         width: 100%;
         font-size: 0.85rem;
       }
+
       button.primary:hover {
         background: #2c405b;
         transform: translateY(-1px);
       }
+
       .filter-bar {
         display: flex;
         flex-wrap: wrap;
@@ -211,14 +226,17 @@
         padding: 1rem;
         border-radius: 1.2rem;
       }
+
       .filter-group {
         flex: 1;
         min-width: 160px;
       }
+
       .filter-group label {
         font-size: 0.7rem;
         margin-bottom: 2px;
       }
+
       .reset-filter {
         background: #eef2ff;
         border: none;
@@ -229,7 +247,6 @@
         font-size: 0.75rem;
       }
 
-      /* tables */
       .section-card {
         background: white;
         border-radius: 1.5rem;
@@ -238,6 +255,7 @@
         box-shadow: 0 4px 14px rgba(0, 0, 0, 0.02);
         border: 1px solid #eef2f9;
       }
+
       .section-header {
         display: flex;
         justify-content: space-between;
@@ -245,19 +263,23 @@
         margin-bottom: 1rem;
         flex-wrap: wrap;
       }
+
       .section-header h2 {
         font-size: 1.3rem;
         font-weight: 600;
       }
+
       .table-wrapper {
         overflow-x: auto;
         border-radius: 1rem;
       }
+
       table {
         width: 100%;
         border-collapse: collapse;
         font-size: 0.8rem;
       }
+
       th {
         text-align: left;
         padding: 12px 8px;
@@ -265,11 +287,13 @@
         font-weight: 600;
         color: #2c3e50;
       }
+
       td {
         padding: 10px 8px;
         border-bottom: 1px solid #edf2f7;
         vertical-align: middle;
       }
+
       .status-badge {
         display: inline-block;
         padding: 4px 10px;
@@ -278,36 +302,44 @@
         font-weight: 600;
         text-align: center;
       }
+
       .status-pending {
         background: #fef3c7;
         color: #b45309;
       }
+
       .status-running {
         background: #e0f2fe;
         color: #0369a1;
       }
+
       .status-completed {
         background: #dff9e6;
         color: #2b6e3c;
       }
+
       .status-failed {
         background: #ffe4e2;
         color: #b91c1c;
       }
+
       .status-active {
         background: #dff9e6;
         color: #15803d;
       }
+
       .status-dead {
         background: #f1f3f4;
         color: #5c5f66;
       }
+
       .badge-sm {
         background: #eef2ff;
         border-radius: 30px;
         padding: 2px 8px;
         font-size: 0.7rem;
       }
+
       .q-table-preview {
         background: #f9fbfe;
         border-radius: 1rem;
@@ -315,11 +347,13 @@
         font-family: monospace;
         font-size: 0.7rem;
       }
+
       .flex-between {
         display: flex;
         justify-content: space-between;
         align-items: center;
       }
+
       .resource-bar {
         background: #e2e8f0;
         border-radius: 20px;
@@ -327,11 +361,13 @@
         width: 80px;
         overflow: hidden;
       }
+
       .resource-fill {
         background: #2c6e9e;
         height: 100%;
         border-radius: 20px;
       }
+
       .toast-msg {
         position: fixed;
         bottom: 20px;
@@ -345,16 +381,19 @@
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         transition: 0.2s;
       }
+
       @media (max-width: 680px) {
         body {
           padding: 1rem;
         }
+
         .stat-number {
           font-size: 1.6rem;
         }
       }
     </style>
   </head>
+
   <body>
     <div class="dashboard-container">
       <div class="header">
@@ -422,10 +461,23 @@
             <input type="number" id="taskPriority" value="1" min="0" max="5" />
           </div>
           <div class="form-group">
-            <label>Data payload (JSON)</label>
-            <textarea id="taskData" rows="2">
-{"demo": "task_data", "type": "inference"}</textarea
-            >
+            <label>Task Type (affects duration)</label>
+            <select id="taskType">
+              <option value="cpu_heavy">⚡ CPU Heavy (fast, 10s)</option>
+              <option value="io_heavy">🐌 I/O Heavy (slow, 60s)</option>
+              <option value="memory_heavy">
+                💾 Memory Heavy (very slow, 120s)
+              </option>
+              <option value="network_heavy">
+                🌐 Network Heavy (medium, 30s)
+              </option>
+              <option value="mixed">🔄 Mixed (25s)</option>
+              <option value="unknown">❓ Unknown (15s, default)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Data payload (JSON) - optional</label>
+            <textarea id="taskData" rows="2">{"demo": "task_data"}</textarea>
           </div>
           <button class="primary" id="submitTaskBtn">
             <i class="fas fa-tasks"></i> Schedule task
@@ -464,8 +516,9 @@
               padding: 4px 12px;
               border-radius: 30px;
             "
-            >heartbeat & resource aware</span
           >
+            heartbeat & resource aware
+          </span>
         </div>
         <div class="table-wrapper">
           <table id="workersTable">
@@ -554,17 +607,16 @@
 
     <script>
       // ========================  CONFIGURATION ========================
-      const API_BASE = "http://localhost:8000"; // backend address
+      const API_BASE = "http://localhost:8000";
       const REFRESH_INTERVAL_MS = 5000;
 
-      // Global state for tasks & workers (to apply filters)
+      // Global state
       let globalWorkers = [];
       let globalTasks = [];
       let globalRlMetrics = null;
       let currentTaskFilter = "all";
       let currentWorkerFilter = "";
 
-      // Helper toasts
       function showMessage(msg, isError = false) {
         let toast = document.createElement("div");
         toast.className = "toast-msg";
@@ -574,7 +626,6 @@
         setTimeout(() => toast.remove(), 2800);
       }
 
-      // API wrappers
       async function apiGet(endpoint) {
         try {
           const res = await fetch(`${API_BASE}${endpoint}`);
@@ -604,7 +655,6 @@
         }
       }
 
-      // -------------------  DATA FETCH & RENDER -------------------
       async function fetchAllData() {
         try {
           const [workers, tasks, rlMetrics] = await Promise.all([
@@ -626,7 +676,6 @@
         }
       }
 
-      // compute stats from workers & tasks
       function updateStats(workers, tasks, rlMetrics) {
         const totalWorkers = workers.length;
         const activeWorkers = workers.filter(
@@ -651,7 +700,6 @@
         }
       }
 
-      // Compute assigned task count per worker by scanning tasks
       function computeAssignedTasksCount(workers, tasks) {
         const assignedMap = new Map();
         workers.forEach((w) => assignedMap.set(w.id, 0));
@@ -688,18 +736,17 @@
               w.status === "active" ? "status-active" : "status-dead";
             const assignedCount = assignedCounts.get(w.id) || 0;
             return `<tr>
-        <td><code>${shortId}</code><br><span style="font-size:0.65rem;">${w.id.slice(0, 8)}...</span></td>
-        <td>${w.cpu_cores} / ${w.available_cpu}<div class="resource-bar"><div class="resource-fill" style="width:${cpuPercent}%; background:#3b6ea0;"></div></div></td>
-        <td>${w.ram}GB / ${w.available_ram}GB<div class="resource-bar"><div class="resource-fill" style="width:${ramPercent}%;"></div></div></td>
-        <td><span class="status-badge ${statusClass}">${w.status}</span></td>
-        <td>${lastHb}</td>
-        <td><strong>${assignedCount}</strong> task${assignedCount !== 1 ? "s" : ""}</td>
-      </tr>`;
+            <td><code>${shortId}</code><br><span style="font-size:0.65rem;">${w.id.slice(0, 8)}...</span></td>
+            <td>${w.cpu_cores} / ${w.available_cpu}<div class="resource-bar"><div class="resource-fill" style="width:${cpuPercent}%; background:#3b6ea0;"></div></div></td>
+            <td>${w.ram}GB / ${w.available_ram}GB<div class="resource-bar"><div class="resource-fill" style="width:${ramPercent}%;"></div></div></td>
+            <td><span class="status-badge ${statusClass}">${w.status}</span></td>
+            <td>${lastHb}</td>
+            <td><strong>${assignedCount}</strong> task${assignedCount !== 1 ? "s" : ""}</td>
+          </tr>`;
           })
           .join("");
       }
 
-      // Filter tasks based on status and workerId filter
       function getFilteredTasks(tasks, workers) {
         let filtered = [...tasks];
         if (currentTaskFilter !== "all") {
@@ -709,7 +756,6 @@
           const filterLower = currentWorkerFilter.trim().toLowerCase();
           filtered = filtered.filter((t) => {
             if (!t.assigned_worker) return false;
-            // match short id (last 6 chars) or full id contains filter
             const shortId = t.assigned_worker.slice(-6).toLowerCase();
             const fullId = t.assigned_worker.toLowerCase();
             return (
@@ -745,19 +791,10 @@
             else if (t.status === "failed") statusClass = "status-failed";
             else statusClass = "status-pending";
 
-            // const workerShort = t.assigned_worker
-            //   ? t.assigned_worker.slice(-6)
-            //   : "—";
-
             let workerDisplay = "—";
-
-            // running → show assigned worker
             if (t.status === "running" && t.assigned_worker) {
               workerDisplay = t.assigned_worker.slice(-6);
-            }
-
-            // completed → show completed_by (new field)
-            else if (t.status === "completed" && t.completed_by) {
+            } else if (t.status === "completed" && t.completed_by) {
               workerDisplay = "✔ " + t.completed_by.slice(-6);
             }
 
@@ -769,20 +806,14 @@
             }
             const createdAt = new Date(t.created_at).toLocaleString();
             return `<tr>
-        <td><code>${t.id.slice(-8)}</code></td>
-        <td><span class="status-badge ${statusClass}">${t.status}</span></td>
-        <td>${t.required_cpu} vCPU / ${t.required_ram} GB</td>
-        <td>${t.priority}</td>
-        <td>
-  ${
-    workerDisplay !== "—"
-      ? `<i class="fas fa-microchip"></i> ${workerDisplay}`
-      : "—"
-  }
-</td>
-        <td>${rlInfo}</td>
-        <td style="font-size:0.7rem;">${createdAt}</td>
-      </tr>`;
+            <td><code>${t.id.slice(-8)}</code></td>
+            <td><span class="status-badge ${statusClass}">${t.status}</span></td>
+            <td>${t.required_cpu} vCPU / ${t.required_ram} GB</td>
+            <td>${t.priority}</td>
+            <td>${workerDisplay !== "—" ? `<i class="fas fa-microchip"></i> ${workerDisplay}` : "—"}</td>
+            <td>${rlInfo}</td>
+            <td style="font-size:0.7rem;">${createdAt}</td>
+          </tr>`;
           })
           .join("");
       }
@@ -806,18 +837,18 @@
           const q0 = s.q_values[0].toFixed(2);
           const q1 = s.q_values[1].toFixed(2);
           html += `<div style="background:#f1f5f9; padding:8px; border-radius:14px;">
-        <div style="font-family:monospace; font-size:0.7rem;">🏷️ state: ${s.state}</div>
-        <div class="flex-between"><span>⚖️ priority weight: ${q0}</span> <span>⏱️ duration weight: ${q1}</span></div>
-        <div style="font-size:0.65rem; color:#3b6ea0;">Δ diff: ${s.diff.toFixed(3)}</div>
-      </div>`;
+            <div style="font-family:monospace; font-size:0.7rem;">🏷️ state: ${s.state}</div>
+            <div class="flex-between"><span>⚖️ priority weight: ${q0}</span> <span>⏱️ duration weight: ${q1}</span></div>
+            <div style="font-size:0.65rem; color:#3b6ea0;">Δ diff: ${s.diff.toFixed(3)}</div>
+          </div>`;
         });
         html += `</div>`;
-        if (rlData.success_rate)
+        if (rlData.success_rate) {
           html += `<div style="margin-top:12px; font-size:0.7rem;">✅ global success rate: ${(rlData.success_rate * 100).toFixed(1)}%</div>`;
+        }
         container.innerHTML = html;
       }
 
-      // main render that uses global data and reapplies filters
       function refreshUIContent() {
         if (!globalWorkers && !globalTasks) return;
         updateStats(globalWorkers, globalTasks, globalRlMetrics);
@@ -826,7 +857,6 @@
         renderRLMetrics(globalRlMetrics);
       }
 
-      // fetch fresh data and update global state, then refresh UI
       let isLoading = false;
       async function refreshDashboard() {
         if (isLoading) return;
@@ -844,13 +874,14 @@
         }
       }
 
-      // -------- actions (submit task, add worker) --------
       async function submitTask() {
         const cpu = parseInt(document.getElementById("taskCpu").value);
         const ram = parseInt(document.getElementById("taskRam").value);
         const priority = parseInt(
           document.getElementById("taskPriority").value,
         );
+        const taskType = document.getElementById("taskType").value;
+
         let dataRaw = document.getElementById("taskData").value;
         let dataObj = {};
         try {
@@ -859,6 +890,10 @@
           showMessage("Invalid JSON payload, using default", true);
           dataObj = { demo: "fallback", message: "task from dashboard" };
         }
+
+        // Add task type to the data payload
+        dataObj.type = taskType;
+
         if (isNaN(cpu) || isNaN(ram) || cpu < 1 || ram < 1) {
           showMessage("CPU / RAM must be positive integers", true);
           return;
@@ -871,7 +906,7 @@
             data: dataObj,
           });
           showMessage(
-            `✅ Task ${response.id.slice(-8)} submitted (${cpu}CPU / ${ram}GB)`,
+            `✅ Task ${response.id.slice(-8)} submitted (${cpu}CPU / ${ram}GB, type: ${taskType})`,
           );
           refreshDashboard();
         } catch (err) {
@@ -900,7 +935,6 @@
         }
       }
 
-      // filter event handlers
       function applyFilters() {
         currentTaskFilter = document.getElementById("taskStatusFilter").value;
         currentWorkerFilter = document.getElementById("workerIdFilter").value;
@@ -916,14 +950,12 @@
         showMessage("Filters reset");
       }
 
-      // auto refresh
       let intervalId = null;
       function startAutoRefresh() {
         if (intervalId) clearInterval(intervalId);
         intervalId = setInterval(() => refreshDashboard(), REFRESH_INTERVAL_MS);
       }
 
-      // initial load
       window.addEventListener("DOMContentLoaded", async () => {
         await refreshDashboard();
         startAutoRefresh();
@@ -939,7 +971,6 @@
             refreshDashboard();
             showMessage("Refreshing dashboard...");
           });
-        // filter listeners
         document
           .getElementById("taskStatusFilter")
           .addEventListener("change", applyFilters);
@@ -949,7 +980,7 @@
         document
           .getElementById("resetFiltersBtn")
           .addEventListener("click", resetFilters);
-        // warm about backend
+
         setTimeout(() => {
           if (
             globalWorkers.length === 0 &&
