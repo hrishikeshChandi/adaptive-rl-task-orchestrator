@@ -52,12 +52,61 @@ def _backoff_delay(attempt: int, base: float = 0.5, cap: float = 8.0) -> float:
 #     return True
 
 
+# def execute_task(task: dict) -> bool:
+#     cpu = task.get("required_cpu", 1)
+#     ram = task.get("required_ram", 1)
+
+#     # Get task type from the data field
+#     task_type = task.get("data", {}).get("type", "unknown")
+
+#     # Duration based on task TYPE, not CPU/RAM
+#     duration_map = {
+#         "cpu_heavy": 10,  # Fast even with high CPU/RAM
+#         "io_heavy": 60,  # Slow even with low CPU/RAM
+#         "memory_heavy": 120,  # Very slow
+#         "network_heavy": 30,  # Medium
+#         "mixed": 25,
+#         "unknown": 15,
+#     }
+
+#     duration = duration_map.get(task_type, 15)
+#     # Add small noise for realism (±3 seconds)
+#     duration += random.uniform(-3, 3)
+#     duration = max(1, duration)
+
+#     print(f"Task: type={task_type}, CPU={cpu}, RAM={ram}, Duration={duration:.1f}s")
+#     time.sleep(duration)
+
+#     # Controlled failure rate
+#     if random.random() < 0.3:
+#         raise Exception("Simulated execution failure")
+
+#     return True
+
+
 def execute_task(task: dict) -> bool:
     cpu = task.get("required_cpu", 1)
     ram = task.get("required_ram", 1)
 
-    # Get task type from the data field
-    task_type = task.get("data", {}).get("type", "unknown")
+    # DEBUG: Print full task data to see what's being received
+    print(f"[DEBUG] ========== TASK RECEIVED ==========")
+    print(f"[DEBUG] Task ID: {task.get('id', 'unknown')}")
+
+    # Safe data extraction
+    data_field = task.get("data")
+    print(f"[DEBUG] task.get('data'): {data_field}")
+
+    if data_field is None:
+        print(f"[DEBUG] WARNING: data field is None! Setting task_type to 'unknown'")
+        task_type = "unknown"
+    elif isinstance(data_field, dict):
+        task_type = data_field.get("type", "unknown")
+        print(f"[DEBUG] data_field.get('type'): {task_type}")
+    else:
+        print(f"[DEBUG] WARNING: data field is not a dict! Type: {type(data_field)}")
+        task_type = "unknown"
+
+    print(f"[DEBUG] Final task_type: '{task_type}'")
 
     # Duration based on task TYPE, not CPU/RAM
     duration_map = {
@@ -70,17 +119,26 @@ def execute_task(task: dict) -> bool:
     }
 
     duration = duration_map.get(task_type, 15)
+    print(f"[DEBUG] Base duration: {duration}s for type '{task_type}'")
+
     # Add small noise for realism (±3 seconds)
-    duration += random.uniform(-3, 3)
+    noise = random.uniform(-3, 3)
+    duration += noise
     duration = max(1, duration)
 
-    print(f"Task: type={task_type}, CPU={cpu}, RAM={ram}, Duration={duration:.1f}s")
+    print(f"[DEBUG] Final duration: {duration:.1f}s (noise: {noise:+.1f}s)")
+
+    print(
+        f"[WORKER] Task: type={task_type}, CPU={cpu}, RAM={ram}, Duration={duration:.1f}s"
+    )
     time.sleep(duration)
 
-    # Controlled failure rate
+    # Controlled failure rate (30% chance)
     if random.random() < 0.3:
+        print(f"[WORKER] Task FAILED")
         raise Exception("Simulated execution failure")
 
+    print(f"[WORKER] Task COMPLETED")
     return True
 
 
