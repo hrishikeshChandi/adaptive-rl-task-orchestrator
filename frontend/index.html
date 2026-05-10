@@ -342,12 +342,25 @@
         color: #d1d5db;
       }
 
-      .badge-sm {
+      /*.badge-sm {
         background: #1e293b;
         border-radius: 30px;
         padding: 2px 8px;
         font-size: 0.7rem;
         color: #94a3b8;
+      }*/
+
+      .badge-sm {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: #1e293b;
+        border: 1px solid #334155;
+        border-radius: 30px;
+        padding: 3px 9px;
+        font-size: 0.7rem;
+        color: #94a3b8;
+        font-weight: 500;
       }
 
       .q-table-preview {
@@ -837,15 +850,40 @@
         }
         let html = `<div style="font-weight:600; margin-bottom:8px;"><i class="fas fa-chart-simple"></i> Top state-action values</div>`;
         html += `<div style="display:flex; flex-direction:column; gap:8px;">`;
+        // samples.slice(0, 4).forEach((s) => {
+        //   const q0 = s.q_values[0].toFixed(2);
+        //   const q1 = s.q_values[1].toFixed(2);
+        //   html += `<div style="background:#f1f5f9; padding:8px; border-radius:14px;">
+        //     <div style="font-family:monospace; font-size:0.7rem;">🏷️ state: ${s.state}</div>
+        //     <div class="flex-between"><span>⚖️ priority weight: ${q0}</span> <span>⏱️ duration weight: ${q1}</span></div>
+        //     <div style="font-size:0.65rem; color:#3b6ea0;">Δ diff: ${s.diff.toFixed(3)}</div>
+        //   </div>`;
+        // });
+
         samples.slice(0, 4).forEach((s) => {
           const q0 = s.q_values[0].toFixed(2);
           const q1 = s.q_values[1].toFixed(2);
-          html += `<div style="background:#f1f5f9; padding:8px; border-radius:14px;">
-            <div style="font-family:monospace; font-size:0.7rem;">🏷️ state: ${s.state}</div>
-            <div class="flex-between"><span>⚖️ priority weight: ${q0}</span> <span>⏱️ duration weight: ${q1}</span></div>
-            <div style="font-size:0.65rem; color:#3b6ea0;">Δ diff: ${s.diff.toFixed(3)}</div>
-          </div>`;
+
+          html += `
+    <div style="background:#0f172a; padding:10px; border-radius:14px; border:1px solid #1f2a3e;">
+      
+      <div style="margin-bottom:8px;">
+        <span class="badge-sm">🏷️ ${s.state}</span>
+      </div>
+
+      <div class="flex-between" style="margin-bottom:6px;">
+        <span class="badge-sm">⚖️ priority ${q0}</span>
+        <span class="badge-sm">⏱️ duration ${q1}</span>
+      </div>
+
+      <div>
+        <span class="badge-sm">Δ diff ${s.diff.toFixed(3)}</span>
+      </div>
+
+    </div>
+  `;
         });
+
         html += `</div>`;
         if (rlData.success_rate) {
           html += `<div style="margin-top:12px; font-size:0.7rem;">✅ global success rate: ${(rlData.success_rate * 100).toFixed(1)}%</div>`;
